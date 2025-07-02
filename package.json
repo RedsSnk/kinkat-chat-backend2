@@ -1,7 +1,7 @@
 {
-  "name": "chat-backend",
+  "name": "chat-backend-flarum",
   "version": "1.0.0",
-  "description": "Simple chat backend using Express and Socket.io",
+  "description": "Chatroom with Flarum login detection and dark cam-style UI",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

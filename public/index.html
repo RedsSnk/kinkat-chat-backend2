@@ -1,34 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Simple Chat</title>
+  <title>Kinkat Chatroom</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #111; color: #fff; }
-    #chat { border: 1px solid #333; padding: 10px; max-width: 500px; }
-    input { width: 80%; padding: 10px; }
-    button { padding: 10px; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #fff; margin: 0; padding: 0; }
+    #container { max-width: 700px; margin: 50px auto; background: #1a1a1a; padding: 20px; border-radius: 15px; box-shadow: 0 0 20px #ff005d55; }
+    h2 { text-align: center; color: #ff3399; }
+    #chat { height: 300px; overflow-y: scroll; padding: 10px; background: #111; border: 1px solid #333; border-radius: 10px; margin-bottom: 10px; }
+    #chat div { margin: 5px 0; }
+    #chat b { color: #ff3399; }
+    input, button { padding: 10px; border-radius: 8px; border: none; }
+    input { width: 75%; background: #222; color: #fff; }
+    button { background: #ff3399; color: white; cursor: pointer; }
+    #username { font-size: 14px; margin-bottom: 10px; color: #ccc; text-align: right; }
   </style>
 </head>
 <body>
-  <h2>Chatroom</h2>
-  <div id="chat"></div>
-  <input id="message" placeholder="Type a message...">
-  <button onclick="sendMessage()">Send</button>
+  <div id="container">
+    <h2>💋 Kinkat Chatroom</h2>
+    <div id="username">Logged in as: <span id="user">guest</span></div>
+    <div id="chat"></div>
+    <input id="message" placeholder="Type something hot..." autocomplete="off">
+    <button onclick="sendMessage()">Send</button>
+  </div>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
     const socket = io();
 
+    let username = "guest";
+
+    // Detect Flarum login
+    fetch('https://kinkat.ro/api', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.data && data.data.attributes && data.data.attributes.username) {
+          username = data.data.attributes.username;
+          document.getElementById('user').textContent = username;
+        }
+      });
+
+    // Handle receiving messages
     socket.on('chat message', function(data) {
       const chat = document.getElementById('chat');
-      chat.innerHTML += '<div><b>' + data.username + ':</b> ' + data.message + '</div>';
+      const messageHTML = '<div><b>' + data.username + '</b>: ' + data.message + '</div>';
+      chat.innerHTML += messageHTML;
+      chat.scrollTop = chat.scrollHeight;
     });
 
     function sendMessage() {
       const msgInput = document.getElementById('message');
       const message = msgInput.value;
       if (message) {
-        socket.emit('chat message', { username: 'guest', message: message });
+        socket.emit('chat message', { username, message });
         msgInput.value = '';
       }
     }
