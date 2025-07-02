@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Chat</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #111; color: #fff; }
+    #chat { border: 1px solid #333; padding: 10px; max-width: 500px; }
+    input { width: 80%; padding: 10px; }
+    button { padding: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Chatroom</h2>
+  <div id="chat"></div>
+  <input id="message" placeholder="Type a message...">
+  <button onclick="sendMessage()">Send</button>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('chat message', function(data) {
+      const chat = document.getElementById('chat');
+      chat.innerHTML += '<div><b>' + data.username + ':</b> ' + data.message + '</div>';
+    });
+
+    function sendMessage() {
+      const msgInput = document.getElementById('message');
+      const message = msgInput.value;
+      if (message) {
+        socket.emit('chat message', { username: 'guest', message: message });
+        msgInput.value = '';
+      }
+    }
+  </script>
+</body>
+</html>
